@@ -29,11 +29,24 @@ public abstract class Charachter {
     return attack;
   }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+
   public void takeDamage(int damage) {
     health -= damage;
     if (health < 0) {
       health = 0;
     }
+  }
+
+  public void doDamage(Charachter enemy) {
+    if (enemy == null) {
+      System.out.println("No enemy to attack.");
+      return;
+    }
+    enemy.takeDamage(attack);
+    System.out.println(this.name + " attacks " + enemy.getName() + " for " + attack + " damage!");
   }
 
   private void hpCheck() {
@@ -50,7 +63,7 @@ public abstract class Charachter {
     String greenBackground = "\u001B[42m";
     String redBackground = "\u001B[41m";
 
-    // Välj färg baserat på HP
+    // ? Välj färg baserat på HP
     if (health <= 19) {
       System.out.print(redBackground);
     } else {
@@ -74,6 +87,10 @@ public abstract class Charachter {
     if (health > maxHealth) {
       health = maxHealth;
     }
+  }
+
+  public boolean isAlive() {
+    return health > 0;
   }
 
   public String toString() {
