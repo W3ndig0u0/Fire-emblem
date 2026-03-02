@@ -17,6 +17,7 @@ public class Hero extends Charachter {
   }
 
   public void LevelUp() {
+    System.out.print("\033[H\033[2J");
     lv++;
     currExp = 0;
     maxExp += 10;

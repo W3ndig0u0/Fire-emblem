@@ -1,63 +1,81 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Gameloop {
   public void startGame(Scanner scanner) {
+    Hero hero = new Hero("Player", 100, 10, 20);
+    List<Demon> enemies = new ArrayList<>();
+    int wave = 1;
 
-    String promt = "What to you want to do?";
-    List<String> menuOptions = List.of("Attack", "Items", "Quit");
-    MenuFunction menu = new MenuFunction(promt, menuOptions);
-
-    Hero hero = new Hero("Player", 100, 50, 20);
-    Demon enemy = new Demon("Lesser Demon", 30, 50, 20);
-    List<Charachter> characters = List.of(hero, enemy);
-
-    int selectedIndex = menu.run(0, scanner);
     while (hero.isAlive()) {
-      System.out.print("\033[H\033[2J");
-
-      for (Charachter c : characters) {
-        c.hpBar();
+      // ! Om listan är tom, spawn ny våg med fler fiender +1
+      if (enemies.isEmpty()) {
+        System.out.println("--- WAVE " + wave + " BEGINS ---\n");
+        for (int i = 0; i < wave; i++) {
+          enemies.add(new Demon("Lesser Demon " + (i + 1), 30, 5, 10));
+        }
+        wave++;
       }
+
+      // ! Menyval
+      System.out.println("=== STATUS ===");
+      hero.hpBar();
+      System.out.println("- ENEMIES -");
+      for (Demon e : enemies) {
+        e.hpBar();
+      }
+      System.out.println("==============");
+
+      String prompt = "\n[ " + hero.getName() + "'s Turn ]\nChoose your action:";
+
+      List<String> menuOptions = List.of("Attack first enemy", "Items", "Quit");
+      MenuFunction menu = new MenuFunction(prompt, menuOptions);
+      waitForKey(scanner);
+
+      int selectedIndex = menu.run(0, scanner);
 
       switch (selectedIndex) {
         case 0 -> {
-          System.out.println("You attack the enemy!");
-          enemy.takeDamage(10);
-          enemy.hpBar();
-          waitForKey(scanner);
+          // ! Attackera den första fienden i listan
+          Demon target = enemies.get(0);
+          System.out.println("You attack " + target.getName() + "!" + " (" + hero.getAttack() + " damage)");
+          target.takeDamage(hero.getAttack());
 
-          if (!enemy.isAlive()) {
-            System.out.println("You defeated the enemy!");
-            hero.gainExp(10);
-            waitForKey(scanner);
-            return;
+          for (Demon e : enemies) {
+            if (e.isAlive()) {
+              System.out.println(e.getName() + " attacks you!" + " (" + e.getAttack() + " damage)");
+              hero.takeDamage(e.getAttack());
+            }
           }
 
-          System.out.println("The enemy attacks you!");
-          hero.takeDamage(10);
-          hero.hpBar();
-          waitForKey(scanner);
+          if (!target.isAlive()) {
+            System.out.println("You defeated " + target.getName() + "!");
+            hero.gainExp(target.giveExp());
+            enemies.remove(0);
+            waitForKey(scanner);
+          }
 
+          waitForKey(scanner);
         }
         case 1 -> {
           System.out.println("Items not implemented!");
           waitForKey(scanner);
-
         }
         case 2 -> {
-          System.out.println("Quitting Game...");
           return;
         }
-        default -> System.out.println("Invalid input. Please try again.");
+      }
+
+      if (!hero.isAlive()) {
+        System.out.println("Game Over! You reached wave " + (wave - 1));
+        waitForKey(scanner);
       }
     }
-    scanner.nextLine();
   }
 
   private void waitForKey(Scanner scanner) {
     System.out.println("\nPress Enter to continue...");
-    if (scanner.hasNextLine())
-      scanner.nextLine();
+    scanner.nextLine();
   }
 }
