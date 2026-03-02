@@ -9,7 +9,7 @@ public class Menu {
   }
 
   public void startMenu() {
-    String promt = "Welcome to the Menu. What to you want to do? @Move around in the Menu by using the S and S.@Continue by pressing Enter!@";
+    String promt = "Welcome to the RPG GAME. @What to you want to do? @Move around in the menu by using the S and S.@Continue by pressing Enter!@";
     promt = promt.replace("@", System.lineSeparator());
 
     List<String> menuOptions = List.of("Start", "About", "Quit");

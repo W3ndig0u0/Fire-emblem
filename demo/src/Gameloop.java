@@ -5,9 +5,20 @@ import java.util.Scanner;
 public class Gameloop {
   public void startGame(Scanner scanner) {
     Hero hero = new Hero("Player", 20, 5, 10);
+
+    Weapon startingWeapon = new Weapon("Rusty Sword", 1, 5, "Basic", 5);
+    hero.addToInventory(startingWeapon);
+
+    PoisenPotion poisenPotion = new PoisenPotion("Poisen Potion", 1, 5, "Basic");
+    hero.addToInventory(poisenPotion);
+
+    HealPotion healPotion = new HealPotion("Heal Potion", 1, 10, "Basic");
+    hero.addToInventory(healPotion);
+
     List<Demon> enemies = new ArrayList<>();
     int wave = 1;
     boolean inRewardStage = false;
+    InventoryMenu inventoryMenu = new InventoryMenu();
 
     while (hero.isAlive()) {
       // ! Om listan är tom, spawn ny våg med fler fiender +1
@@ -39,7 +50,7 @@ public class Gameloop {
 
       String prompt = "\n[ " + hero.getName() + "'s Turn ]\nChoose your action:";
 
-      List<String> menuOptions = List.of("Attack first enemy", "Items", "Quit");
+      List<String> menuOptions = List.of("Attack enemy", "Item Menu", "Quit");
       MenuFunction menu = new MenuFunction(prompt, menuOptions);
       waitForKey(scanner);
 
@@ -47,15 +58,33 @@ public class Gameloop {
 
       switch (selectedIndex) {
         case 0 -> {
-          // ! Attackera den första fienden i listan
 
-          Demon target = enemies.get(0);
-          System.out.println("You attack " + target.getName() + "!" + " (" + hero.getAttack() + " damage)");
+          List<String> enemyOptions = new java.util.ArrayList<>();
+
+          for (Demon demon : enemies) {
+            enemyOptions.add(demon.getName() + " (HP: " + demon.getHealth() + ")" + " (" + demon.getAttack() + " ATK)");
+          }
+
+          MenuFunction enemyMenu = new MenuFunction("Choose an enemy to attack:", enemyOptions);
+          int enemyIndex = enemyMenu.run(0, scanner);
+          Demon target = null;
+
+          while (target == null) {
+            if (enemyIndex >= 0 && enemyIndex < enemies.size()) {
+              target = enemies.get(enemyIndex);
+              break;
+            } else {
+              System.out.println("Invalid selection. Please choose a valid enemy.");
+              enemyIndex = enemyMenu.run(enemyIndex, scanner);
+            }
+          }
+
+          System.out.println("You attacked " + target.getName() + "!" + " (" + hero.getAttack() + " damage)");
           target.takeDamage(hero.getAttack());
 
           for (Demon e : enemies) {
             if (e.isAlive()) {
-              System.out.println(e.getName() + " attacks you!" + " (" + e.getAttack() + " damage)");
+              System.out.println(e.getName() + " attacked you!" + " (" + e.getAttack() + " damage)");
               hero.takeDamage(e.getAttack());
             }
           }
@@ -69,19 +98,27 @@ public class Gameloop {
           waitForKey(scanner);
         }
         case 1 -> {
-          System.out.println("Items not implemented!");
+          inventoryMenu.InventoryListShow(hero, enemies, scanner);
           waitForKey(scanner);
         }
         case 2 -> {
-          return;
+          QuitGame(scanner);
         }
       }
 
       if (!hero.isAlive()) {
         System.out.println("Game Over! You reached wave " + (wave - 1) + ".");
         waitForKey(scanner);
+        QuitGame(scanner);
       }
     }
+  }
+
+  private void QuitGame(Scanner scanner) {
+    System.out.print("\033[H\033[2J");
+    System.out.print("Quitting Game...");
+    scanner.close();
+    System.exit(0);
   }
 
   private void rewardStage(Hero hero, Scanner scanner, int completedWave) {
@@ -90,21 +127,24 @@ public class Gameloop {
     System.out.println("An old NPC approaches you: 'Good work, traveler. Take a gift before the next swarm!'");
 
     String prompt = "Choose your reward:";
-    List<String> rewards = List.of("Heal 20 HP", "Permanent +2 Attack", "Recive Random Item");
+    List<String> rewards = List.of("Heal 5 HP", "Permanent +2 Attack", "Recive Random Potion");
     MenuFunction rewardMenu = new MenuFunction(prompt, rewards);
 
     int choice = rewardMenu.run(0, scanner);
     switch (choice) {
       case 0 -> {
         System.out.println("You feel rejuvenated!");
-        hero.heal(20);
+        hero.heal(5);
       }
       case 1 -> {
         System.out.println("You feel your muscles grow stronger!");
-        hero.setBaseStrength(5);
+        hero.imporveBaseStrength(2);
       }
       case 2 -> {
-        System.out.println("Items not implemented yet!");
+        System.out.print("\033[H\033[2J");
+        PoisenPotion potion = new PoisenPotion("Poisen Potion", 1, 5, "Basic");
+        hero.addToInventory(potion);
+        potion.getInfo();
       }
     }
     waitForKey(scanner);

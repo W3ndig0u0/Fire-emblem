@@ -5,14 +5,20 @@ public abstract class Item {
   protected String name;
   protected int level;
 
-  public Item(String name, int level) {
+  private String rarety;
+
+  public Item(String name, int level, String rarety) {
     setName(name);
     setLevel(level);
+    this.rarety = rarety;
   }
 
   public void getInfo() {
-    System.out.println("The Item's Name is " + getName());
-    System.out.println("The Item's level is " + getLevel());
+    System.out.println("The Item's is a " + getRarety() + " " + getName());
+  }
+
+  public String getRarety() {
+    return rarety;
   }
 
   public String getName() {

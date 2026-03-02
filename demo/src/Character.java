@@ -21,7 +21,7 @@ public abstract class Character {
     return baseStrength;
   }
 
-  public void setBaseStrength(int addStrength) {
+  public void imporveBaseStrength(int addStrength) {
     this.baseStrength += addStrength;
     attack += addStrength;
   }
@@ -63,6 +63,17 @@ public abstract class Character {
       return;
     }
     enemy.takeDamage(attack);
+    System.out.println(this.name + " attacks " + enemy.getName() + " for " + attack + " damage!");
+  }
+
+  public void doDamage(Character enemy, Weapon weapon) {
+    if (enemy == null) {
+      System.out.println("No enemy to attack.");
+      return;
+    }
+    weapon.reduceDurability(1);
+    enemy.takeDamage(attack);
+
     System.out.println(this.name + " attacks " + enemy.getName() + " for " + attack + " damage!");
   }
 
@@ -119,11 +130,16 @@ public abstract class Character {
   }
 
   public void addToInventory(Item item) {
+    System.out.println("You added a " + item.getRarety() + " " + item.getName() + " to your inventory.");
     inventory.add(item);
   }
 
   public void removeFromInventory(int n) {
     inventory.remove(n);
+  }
+
+  public void removeFromInventory(Item item) {
+    inventory.remove(item);
   }
 
   public void useItem(int n, Character target) {
@@ -134,8 +150,20 @@ public abstract class Character {
     inventory.useItem(n, this);
   }
 
+  public void useItem(Item item, Character target) {
+    inventory.useItem(item, target);
+  }
+
+  public void useItem(Item item) {
+    inventory.useItem(item, this);
+  }
+
   public void getItemInfo(int n) {
     inventory.getItemInfo(n);
+  }
+
+  public void getItemInfo(Item item) {
+    inventory.getItemInfo(item);
   }
 
   public int getInventoryLength() {
@@ -145,6 +173,10 @@ public abstract class Character {
 
   public String getInventoryName(int itemListIndex) {
     return inventory.getInventoryName(itemListIndex);
+  }
+
+  public Item getInventoryItem(int itemListIndex) {
+    return inventory.getItem(itemListIndex);
   }
 
 }
