@@ -1,11 +1,11 @@
-public class Hero extends Charachter {
+public class Hero extends Character {
 
   private int currExp = 0;
   private int maxExp = 10;
   private int lv = 1;
 
-  public Hero(String name, int health, int mana, int attack) {
-    super(name, health, mana, attack);
+  public Hero(String name, int health, int mana, int baseStrength) {
+    super(name, health, mana, baseStrength);
   }
 
   public void gainExp(int exp) {

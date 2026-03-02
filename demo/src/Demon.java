@@ -1,7 +1,7 @@
-public class Demon extends Charachter {
+public class Demon extends Character {
 
-  public Demon(String name, int health, int mana, int attack) {
-    super(name, health, mana, attack);
+  public Demon(String name, int health, int mana, int baseStrength) {
+    super(name, health, mana, baseStrength);
   }
 
   public int giveExp() {

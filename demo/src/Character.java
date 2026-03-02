@@ -1,16 +1,29 @@
-public abstract class Charachter {
+public abstract class Character {
   protected String name;
   protected int health;
   protected int maxHealth;
   protected int mana;
   protected int attack;
+  protected int baseStrength;
+  protected Inventory inventory;
 
-  public Charachter(String name, int health, int mana, int attack) {
+  public Character(String name, int health, int mana, int baseStrength) {
     this.name = name;
     this.health = health;
     this.maxHealth = health;
     this.mana = mana;
-    this.attack = attack;
+    this.attack = baseStrength;
+    this.baseStrength = baseStrength;
+    this.inventory = new Inventory();
+  }
+
+  public int getBaseStrength() {
+    return baseStrength;
+  }
+
+  public void setBaseStrength(int addStrength) {
+    this.baseStrength += addStrength;
+    attack += addStrength;
   }
 
   public String getName() {
@@ -19,6 +32,10 @@ public abstract class Charachter {
 
   public int getHealth() {
     return health;
+  }
+
+  public void setHealth(int health) {
+    this.health = health;
   }
 
   public int getMana() {
@@ -40,7 +57,7 @@ public abstract class Charachter {
     }
   }
 
-  public void doDamage(Charachter enemy) {
+  public void doDamage(Character enemy) {
     if (enemy == null) {
       System.out.println("No enemy to attack.");
       return;
@@ -96,4 +113,38 @@ public abstract class Charachter {
   public String toString() {
     return String.format("%s - Health: %d, Mana: %d, Attack: %d", name, health, mana, attack);
   }
+
+  public void showInventory() {
+    inventory.showInventory();
+  }
+
+  public void addToInventory(Item item) {
+    inventory.add(item);
+  }
+
+  public void removeFromInventory(int n) {
+    inventory.remove(n);
+  }
+
+  public void useItem(int n, Character target) {
+    inventory.useItem(n, target);
+  }
+
+  public void useItem(int n) {
+    inventory.useItem(n, this);
+  }
+
+  public void getItemInfo(int n) {
+    inventory.getItemInfo(n);
+  }
+
+  public int getInventoryLength() {
+    int amount = inventory.getLength();
+    return amount;
+  }
+
+  public String getInventoryName(int itemListIndex) {
+    return inventory.getInventoryName(itemListIndex);
+  }
+
 }

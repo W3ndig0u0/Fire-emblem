@@ -4,22 +4,32 @@ import java.util.Scanner;
 
 public class Gameloop {
   public void startGame(Scanner scanner) {
-    Hero hero = new Hero("Player", 100, 10, 20);
+    Hero hero = new Hero("Player", 20, 5, 10);
     List<Demon> enemies = new ArrayList<>();
     int wave = 1;
+    boolean inRewardStage = false;
 
     while (hero.isAlive()) {
       // ! Om listan är tom, spawn ny våg med fler fiender +1
       if (enemies.isEmpty()) {
         System.out.println("--- WAVE " + wave + " BEGINS ---\n");
         for (int i = 0; i < wave; i++) {
-          enemies.add(new Demon("Lesser Demon " + (i + 1), 30, 5, 10));
+          enemies.add(new Demon("Lesser Demon " + (i + 1), 10 + (i * 2), 5, 5 + i));
+        }
+        if (wave > 1) {
+          inRewardStage = true;
         }
         wave++;
       }
 
+      if (inRewardStage) {
+        rewardStage(hero, scanner, wave);
+        inRewardStage = false;
+      }
+
       // ! Menyval
       System.out.println("=== STATUS ===");
+      System.out.println("Wave: " + (wave - 1));
       hero.hpBar();
       System.out.println("- ENEMIES -");
       for (Demon e : enemies) {
@@ -38,6 +48,7 @@ public class Gameloop {
       switch (selectedIndex) {
         case 0 -> {
           // ! Attackera den första fienden i listan
+
           Demon target = enemies.get(0);
           System.out.println("You attack " + target.getName() + "!" + " (" + hero.getAttack() + " damage)");
           target.takeDamage(hero.getAttack());
@@ -53,7 +64,6 @@ public class Gameloop {
             System.out.println("You defeated " + target.getName() + "!");
             hero.gainExp(target.giveExp());
             enemies.remove(0);
-            waitForKey(scanner);
           }
 
           waitForKey(scanner);
@@ -68,10 +78,36 @@ public class Gameloop {
       }
 
       if (!hero.isAlive()) {
-        System.out.println("Game Over! You reached wave " + (wave - 1));
+        System.out.println("Game Over! You reached wave " + (wave - 1) + ".");
         waitForKey(scanner);
       }
     }
+  }
+
+  private void rewardStage(Hero hero, Scanner scanner, int completedWave) {
+    System.out.print("\033[H\033[2J");
+    System.out.println(">>> Wave " + completedWave + " Cleared! <<<");
+    System.out.println("An old NPC approaches you: 'Good work, traveler. Take a gift before the next swarm!'");
+
+    String prompt = "Choose your reward:";
+    List<String> rewards = List.of("Heal 20 HP", "Permanent +2 Attack", "Recive Random Item");
+    MenuFunction rewardMenu = new MenuFunction(prompt, rewards);
+
+    int choice = rewardMenu.run(0, scanner);
+    switch (choice) {
+      case 0 -> {
+        System.out.println("You feel rejuvenated!");
+        hero.heal(20);
+      }
+      case 1 -> {
+        System.out.println("You feel your muscles grow stronger!");
+        hero.setBaseStrength(5);
+      }
+      case 2 -> {
+        System.out.println("Items not implemented yet!");
+      }
+    }
+    waitForKey(scanner);
   }
 
   private void waitForKey(Scanner scanner) {
