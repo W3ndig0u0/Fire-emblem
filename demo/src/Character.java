@@ -91,7 +91,6 @@ public abstract class Character {
     String greenBackground = "\u001B[42m";
     String redBackground = "\u001B[41m";
 
-    // ? Välj färg baserat på HP
     if (health <= 19) {
       System.out.print(redBackground);
     } else {
