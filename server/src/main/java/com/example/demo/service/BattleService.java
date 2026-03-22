@@ -33,7 +33,8 @@ public class BattleService {
         }
 
         if (!defender.isAlive()) {
-            characterRepository.delete(defender);
+            defender.setDead(true);
+            //characterRepository.delete(defender);
         }
 
         characterRepository.save(attacker);

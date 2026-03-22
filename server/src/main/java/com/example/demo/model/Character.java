@@ -39,12 +39,19 @@ public class Character {
   private int currExp = 0;
   private int maxExp = 100;
   private int lv = 1;
+  private boolean isDead = false;
+  private boolean isLord = false;
 
   protected int movementRange;
   protected int posX;
   protected int posY;
   private boolean hasActed = false;
   private int expValue = 20;
+
+  @ManyToOne
+  @JoinColumn(name = "session_id")
+  @com.fasterxml.jackson.annotation.JsonIgnore
+  private GameSession gameSession;
 
   @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
   protected List<Item> inventory = new ArrayList<>();
@@ -88,7 +95,7 @@ public class Character {
     return ThreadLocalRandom.current().nextInt(min, max + 1);
   }
 
-  private void applyGrowth() {
+    private void applyGrowth() {
     if (unitClass != null) {
       if (ThreadLocalRandom.current().nextInt(100) < unitClass.getHpGrowth()) this.maxHealth++;
       if (ThreadLocalRandom.current().nextInt(100) < unitClass.getStrGrowth()) this.attack++;
@@ -107,6 +114,9 @@ public class Character {
 
   public void takeDamage(int damage) {
     this.health = Math.max(0, this.health - damage);
+    if (this.health <= 0) {
+      this.isDead = true;
+    }
   }
 
   public void heal(int amount) {
@@ -114,9 +124,8 @@ public class Character {
   }
 
   public boolean isAlive() {
-    return this.health > 0;
+    return !this.isDead && this.health > 0;
   }
-
 
   public void addToInventory(Item item) {
     if (item instanceof Weapon weapon) {

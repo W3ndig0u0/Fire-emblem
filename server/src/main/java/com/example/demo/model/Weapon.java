@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "weapons")
 @Getter
 @Setter
 @NoArgsConstructor

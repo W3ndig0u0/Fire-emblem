@@ -9,6 +9,7 @@ public enum UnitClass {
     MYRMIDON("Myrmidon", 16, 20, 4, 7, 9, 12, 1, 3, 5, 60, 40, 75, 20, WeaponType.SWORD),
     SOLDIER("Soldier", 18, 22, 5, 8, 3, 6, 4, 7, 5, 75, 45, 40, 45, WeaponType.LANCE),
     FIGHTER("Fighter", 20, 24, 7, 11, 2, 5, 2, 4, 5, 85, 55, 30, 35, WeaponType.AXE),
+    LORD("Lord", 18, 22, 5, 8, 7, 10, 3, 6, 5, 85, 50, 60, 40, WeaponType.SWORD, WeaponType.LANCE, WeaponType.AXE),
 
     KNIGHT("Knight", 22, 26, 6, 9, 0, 2, 9, 13, 4, 90, 60, 10, 70, WeaponType.LANCE),
     CAVALIER("Cavalier", 19, 23, 5, 8, 4, 7, 4, 7, 7, 75, 50, 45, 45, WeaponType.SWORD, WeaponType.LANCE),

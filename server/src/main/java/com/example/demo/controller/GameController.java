@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/game")
@@ -27,6 +28,7 @@ public class GameController {
     private final GameInitializationService initService;
     private final GameService gameService;
     private final CharacterRepository characterRepository;
+    private final AiService aiService;
 
     @PostMapping("/start")
     public ResponseEntity<Long> startGame() {
@@ -35,6 +37,10 @@ public class GameController {
 
     @PostMapping("/move")
     public ResponseEntity<String> move(@RequestParam Long unitId, @RequestParam int x, @RequestParam int y) {
+        Character unit = characterRepository.findById(unitId)
+                .orElseThrow(() -> new RuntimeException("Unit not found"));
+        verifyGameIsActive(unit);
+
         String result = movementService.moveUnit(unitId, x, y);
         return ResponseEntity.ok(result);
     }
@@ -45,6 +51,8 @@ public class GameController {
                 .orElseThrow(() -> new RuntimeException("Attacker not found"));
         Character defender = characterRepository.findById(defenderId)
                 .orElseThrow(() -> new RuntimeException("Defender not found"));
+
+        verifyGameIsActive(attacker);
 
         BattleReport report = battleService.executeAttack(attacker, defender);
         return ResponseEntity.ok(report);
@@ -99,6 +107,8 @@ public class GameController {
         Character target = characterRepository.findById(targetId)
                 .orElseThrow(() -> new RuntimeException("Target not found"));
 
+        verifyGameIsActive(healer);
+
         BattleReport report = battleService.executeHealing(healer, target);
 
         characterRepository.save(healer);
@@ -109,7 +119,10 @@ public class GameController {
 
     @PostMapping("/use-item")
     public ResponseEntity<String> useItem(@RequestParam Long unitId, @RequestParam Long itemId) {
-        Character unit = characterRepository.findById(unitId).orElseThrow();
+        Character unit = characterRepository.findById(unitId)
+                .orElseThrow(() -> new RuntimeException("Unit not found"));
+
+        verifyGameIsActive(unit);
 
         Item item = unit.getInventory().stream()
                 .filter(i -> i.getId().equals(itemId))
@@ -117,18 +130,19 @@ public class GameController {
                 .orElseThrow(() -> new RuntimeException("Item not in inventory"));
 
         item.applyEffect(unit);
-
         unit.removeFromInventory(item);
-
         unit.setHasActed(true);
 
         characterRepository.save(unit);
         return ResponseEntity.ok("Used " + item.getName());
     }
+
     @PostMapping("/equip-weapon")
     public ResponseEntity<String> equipWeapon(@RequestParam Long unitId, @RequestParam Long weaponId) {
         Character unit = characterRepository.findById(unitId)
                 .orElseThrow(() -> new RuntimeException("Character not found"));
+
+        verifyGameIsActive(unit);
 
         Weapon weaponToEquip = (Weapon) unit.getInventory().stream()
                 .filter(i -> i.getId().equals(weaponId) && i instanceof Weapon)
@@ -155,10 +169,16 @@ public class GameController {
             @RequestParam Long receiverId,
             @RequestParam Long itemId
     ) {
-        Character giver = characterRepository.findById(giverId).orElseThrow();
-        Character receiver = characterRepository.findById(receiverId).orElseThrow();
+        Character giver = characterRepository.findById(giverId)
+                .orElseThrow(() -> new RuntimeException("Giver not found"));
+        Character receiver = characterRepository.findById(receiverId)
+                .orElseThrow(() -> new RuntimeException("Receiver not found"));
+
+        verifyGameIsActive(giver);
+
         Item item = giver.getInventory().stream()
-                .filter(i -> i.getId().equals(itemId)).findFirst().orElseThrow();
+                .filter(i -> i.getId().equals(itemId)).findFirst()
+                .orElseThrow(() -> new RuntimeException("Item not found"));
 
         if (giver.getDistanceTo(receiver) > 1) throw new RuntimeException("Too far to trade!");
 
@@ -169,14 +189,6 @@ public class GameController {
         characterRepository.save(receiver);
         return ResponseEntity.ok("Traded " + item.getName());
     }
-
-    @PostMapping("/{sessionId}/enemy-turn")
-    public ResponseEntity<Void> runEnemyTurn(@PathVariable Long sessionId) {
-        aiService.executeEnemyTurn(sessionId);
-        turnService.startPlayerTurn(sessionId);
-        return ResponseEntity.ok().build();
-    }
-
 
     @GetMapping("/unit/{unitId}/valid-moves")
     public ResponseEntity<List<int[]>> getValidMoves(@PathVariable Long unitId) {
@@ -190,4 +202,18 @@ public class GameController {
         return ResponseEntity.ok(battleService.previewCombat(attacker, defender));
     }
 
+    private void verifyGameIsActive(Character unit) {
+        if (unit.getGameSession() == null) return;
+        Long sessionId = unit.getGameSession().getId();
+        GameState state = gameService.getCurrentState(sessionId);
+        if (!state.status().equals("ACTIVE")) {
+            throw new RuntimeException("The battle has ended. No further actions allowed!");
+        }
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException e) {
+        return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+    }
 }
+

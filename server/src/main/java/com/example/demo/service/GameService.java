@@ -26,25 +26,25 @@ public class GameService {
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
         List<Character> allUnits = characterRepository.findByGameSessionId(sessionId);
+        boolean lordFallen = allUnits.stream()
+                .filter(Character::isLord)
+                .anyMatch(u -> !u.isAlive());
 
-        boolean playerAlive = allUnits.stream()
-                .anyMatch(u -> u.getAllegiance() == Allegiance.PLAYER && u.isAlive());
-        boolean enemyAlive = allUnits.stream()
+        boolean enemiesAlive = allUnits.stream()
                 .anyMatch(u -> u.getAllegiance() == Allegiance.ENEMY && u.isAlive());
 
         String status = "ACTIVE";
-        if (!enemyAlive) status = "VICTORY";
-        if (!playerAlive) status = "GAME_OVER";
-
-        List<Character> aliveUnits = allUnits.stream()
-                .filter(Character::isAlive)
-                .toList();
+        if (lordFallen) {
+            status = "GAME_OVER";
+        } else if (!enemiesAlive) {
+            status = "VICTORY";
+        }
 
         return new GameState(
                 session.getId(),
                 session.getTurnNumber(),
                 session.getCurrentPhase(),
-                aliveUnits,
+                allUnits,
                 MAP_WIDTH,
                 MAP_HEIGHT,
                 status
