@@ -21,16 +21,22 @@ public class TurnService {
         GameSession session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
-        session.togglePhase();
+        session.setCurrentPhase("ENEMY_PHASE");
 
-        aiService.executeEnemyTurn();
+        List<Character> enemies = characterRepository.findByGameSessionIdAndAllegiance(sessionId, Character.Allegiance.ENEMY);
+        enemies.forEach(u -> u.setHasActed(false));
+        characterRepository.saveAll(enemies);
 
-        List<Character> allUnits = characterRepository.findAll();
-        allUnits.forEach(u -> u.setHasActed(false));
+        aiService.executeEnemyTurn(sessionId);
 
-        session.togglePhase();
+        session.setCurrentPhase("PLAYER_PHASE");
+        session.setTurnNumber(session.getTurnNumber() + 1);
+
+        List<Character> players = characterRepository.findByGameSessionIdAndAllegiance(sessionId, Character.Allegiance.PLAYER);
+        players.forEach(u -> u.setHasActed(false));
 
         sessionRepository.save(session);
-        characterRepository.saveAll(allUnits);
+        characterRepository.saveAll(players);
     }
 }
+

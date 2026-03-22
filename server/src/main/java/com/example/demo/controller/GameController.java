@@ -170,6 +170,14 @@ public class GameController {
         return ResponseEntity.ok("Traded " + item.getName());
     }
 
+    @PostMapping("/{sessionId}/enemy-turn")
+    public ResponseEntity<Void> runEnemyTurn(@PathVariable Long sessionId) {
+        aiService.executeEnemyTurn(sessionId);
+        turnService.startPlayerTurn(sessionId);
+        return ResponseEntity.ok().build();
+    }
+
+
     @GetMapping("/unit/{unitId}/valid-moves")
     public ResponseEntity<List<int[]>> getValidMoves(@PathVariable Long unitId) {
         return ResponseEntity.ok(movementService.getValidMoves(unitId));

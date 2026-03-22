@@ -13,4 +13,6 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
     List<Character> findByAllegianceNot(Character.Allegiance allegiance);
     Optional<Character> findByPosXAndPosY(int x, int y, int health);
 
+    List<Character> findByGameSessionId(Long sessionId);
+    List<Character> findByGameSessionIdAndAllegiance(Long sessionId, Character.Allegiance allegiance);
 }

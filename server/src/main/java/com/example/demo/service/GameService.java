@@ -25,7 +25,7 @@ public class GameService {
         GameSession session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
-        List<Character> allUnits = characterRepository.findAll();
+        List<Character> allUnits = characterRepository.findByGameSessionId(sessionId);
 
         boolean playerAlive = allUnits.stream()
                 .anyMatch(u -> u.getAllegiance() == Allegiance.PLAYER && u.isAlive());
