@@ -19,8 +19,7 @@ public class HealPotion extends Item {
   }
 
   @Override
-  public void use(Character target) {
+  public void applyEffect(Character target) {
     target.heal(this.healAmount);
   }
-
 }

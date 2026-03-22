@@ -31,5 +31,6 @@ public abstract class Item {
     this.rarity = rarity;
   }
 
-  public abstract void use(Character target);
+  public abstract void applyEffect(Character target);
+
 }

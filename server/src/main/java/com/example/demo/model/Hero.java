@@ -15,8 +15,9 @@ public class Hero extends Character {
   private int maxExp = 10;
   private int lv = 1;
 
-  public Hero(String name, int health, int mana, int baseStrength) {
-    super(name, health, mana, baseStrength);
+  public Hero(String name, int health, int mana, int baseStrength,  int defense) {
+    super(name, health, mana, baseStrength, defense);
+    this.movementRange = 5;
   }
 
   public boolean gainExp(int exp) {

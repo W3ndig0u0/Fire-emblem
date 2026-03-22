@@ -14,8 +14,9 @@ public class Demon extends Character {
   private int expValue = 5;
   private String monsterType;
 
-  public Demon(String name, int health, int mana, int baseStrength) {
-    super(name, health, mana, baseStrength);
+  public Demon(String name, int health, int mana, int baseStrength,  int defense) {
+    super(name, health, mana, baseStrength, defense);
+    this.movementRange = 3;
   }
 
   public int giveExp() {

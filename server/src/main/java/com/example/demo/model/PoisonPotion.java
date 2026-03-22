@@ -16,12 +16,8 @@ public class PoisonPotion extends Item {
     this.poisonAmount = poisonAmount;
   }
 
-  public void applyEffect(java.lang.Character target) {
-    target.setHp(Math.max(0, target.getHp() - this.poisonAmount));
-  }
-
   @Override
-  public void use(Character target) {
-    target.heal(this.healAmount);
+  public void applyEffect(Character target) {
+    target.takeDamage(this.poisonAmount);
   }
 }

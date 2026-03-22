@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.lang.Character;
-
 @Entity
 @Table(name = "weapons")
 @Getter
@@ -14,25 +12,37 @@ import java.lang.Character;
 @NoArgsConstructor
 public class Weapon extends Item {
 
-  @Id
-  private Long id;
   private int strengthBonus;
   private int durability;
   private int maxDurability;
+  private int minRange = 1;
+  private int maxRange = 1;
 
-  @ManyToOne
-  @JoinColumn(name = "character_id")
-  @com.fasterxml.jackson.annotation.JsonIgnore // Prevent infinite loops in JSON
-  private Character owner;
+  @Enumerated(EnumType.STRING)
+  private WeaponType weaponType;
 
-  public Weapon(String name, int level, String rarity, int strengthBonus, int maxDurability) {
+  public Weapon(String name, int level, String rarity, int strengthBonus, int maxDurability, WeaponType type, int minRange, int maxRange) {
     super(name, level, rarity);
     this.strengthBonus = strengthBonus;
     this.maxDurability = maxDurability;
     this.durability = maxDurability;
+    this.weaponType = type;
+    this.minRange = minRange;
+    this.maxRange = maxRange;
   }
+
+  @ManyToOne
+  @JoinColumn(name = "character_id")
+  @com.fasterxml.jackson.annotation.JsonIgnore
+  private Character owner;
 
   public void reduceDurability(int amount) {
     this.durability = Math.max(0, this.durability - amount);
   }
+
+  @Override
+  public void applyEffect(Character target) {
+    this.reduceDurability(1);
+  }
+
 }
