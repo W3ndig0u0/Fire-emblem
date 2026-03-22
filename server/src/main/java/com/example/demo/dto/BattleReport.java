@@ -12,5 +12,8 @@ public record BattleReport(
         int defenderRemainingHp,
         boolean defenderDied,
         int xpGained,
-        boolean leveledUp
+        boolean leveledUp,
+        boolean isCrit,
+        boolean wasMissed,
+        java.util.Map<String, Integer> statGains
 ) {}

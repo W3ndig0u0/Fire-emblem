@@ -17,18 +17,20 @@ public class Weapon extends Item {
   private int maxDurability;
   private int minRange = 1;
   private int maxRange = 1;
+  private boolean equipped = false;
 
   @Enumerated(EnumType.STRING)
   private WeaponType weaponType;
 
-  public Weapon(String name, int level, String rarity, int strengthBonus, int maxDurability, WeaponType type, int minRange, int maxRange) {
+  @Enumerated(EnumType.STRING)
+  private Rarity rarity;
+
+  public Weapon(String name, int level, Rarity rarity, int strengthBonus, int maxDurability, WeaponType type) {
     super(name, level, rarity);
     this.strengthBonus = strengthBonus;
     this.maxDurability = maxDurability;
     this.durability = maxDurability;
     this.weaponType = type;
-    this.minRange = minRange;
-    this.maxRange = maxRange;
   }
 
   @ManyToOne
@@ -44,5 +46,13 @@ public class Weapon extends Item {
   public void applyEffect(Character target) {
     this.reduceDurability(1);
   }
+  public int getStrengthBonus() {
+    double multiplier = (this.rarity != null) ? this.rarity.getDamageMultiplier() : 1.0;
+    return (int) (this.strengthBonus * multiplier);
+  }
 
+  public int getCritRate() {
+    int bonusCrit = (this.rarity != null) ? this.rarity.getBonusCrit() : 0;
+    return this.weaponType.getBaseCrit() + bonusCrit;
+  }
 }

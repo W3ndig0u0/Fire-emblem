@@ -10,6 +10,7 @@ public record GameState (
         String gameSession,
         List<Character> units,
         int mapWidth,
-        int mapHeight
+        int mapHeight,
+        String status
 ){
 }

@@ -11,7 +11,7 @@ public class PoisonPotion extends Item {
 
   private int poisonAmount;
 
-  public PoisonPotion(String name, int level, int poisonAmount, String rarity) {
+  public PoisonPotion(String name, int level, int poisonAmount, Rarity rarity) {
     super(name, level, rarity);
     this.poisonAmount = poisonAmount;
   }

@@ -18,14 +18,16 @@ public abstract class Item {
 
   private String name;
   private int level;
-  private String rarity;
+
+  @Enumerated(EnumType.STRING)
+  protected Rarity rarity;
 
   @ManyToOne
   @JoinColumn(name = "character_id")
   @com.fasterxml.jackson.annotation.JsonIgnore
   private Character owner;
 
-  public Item(String name, int level, String rarity) {
+  public Item(String name, int level, Rarity rarity) {
     this.name = name;
     this.level = level;
     this.rarity = rarity;

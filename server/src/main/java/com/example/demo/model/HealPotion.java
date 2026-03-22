@@ -13,7 +13,7 @@ public class HealPotion extends Item {
 
   private int healAmount;
 
-  public HealPotion(String name, int level, int healAmount, String rarity) {
+  public HealPotion(String name, int level, int healAmount, Rarity rarity) {
     super(name, level, rarity);
     this.healAmount = healAmount;
   }
