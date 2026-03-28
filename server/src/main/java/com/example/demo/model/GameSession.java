@@ -1,12 +1,11 @@
 package com.example.demo.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,6 +18,9 @@ public class GameSession {
 
     private int turnNumber = 1;
     private String currentPhase = "PLAYER_PHASE";
+
+    @OneToMany(mappedBy = "gameSession", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Character> characters;
 
     public void togglePhase() {
         this.currentPhase = currentPhase.equals("PLAYER_PHASE") ? "ENEMY_PHASE" : "PLAYER_PHASE";

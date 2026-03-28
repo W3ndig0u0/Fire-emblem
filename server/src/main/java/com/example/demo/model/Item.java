@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +12,14 @@ import lombok.Setter;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "item_type")
 @Getter @Setter @NoArgsConstructor
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Weapon.class, name = "weapon")
+})
 public abstract class Item {
 
   @Id
@@ -24,7 +34,7 @@ public abstract class Item {
 
   @ManyToOne
   @JoinColumn(name = "character_id")
-  @com.fasterxml.jackson.annotation.JsonIgnore
+  @com.fasterxml.jackson.annotation.JsonBackReference
   private Character owner;
 
   public Item(String name, int level, Rarity rarity) {

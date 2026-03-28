@@ -21,9 +21,6 @@ public class Weapon extends Item {
   @Enumerated(EnumType.STRING)
   private WeaponType weaponType;
 
-  @Enumerated(EnumType.STRING)
-  private Rarity rarity;
-
   public Weapon(String name, int level, Rarity rarity, int strengthBonus, int maxDurability, WeaponType type) {
     super(name, level, rarity);
     this.strengthBonus = strengthBonus;
@@ -31,11 +28,6 @@ public class Weapon extends Item {
     this.durability = maxDurability;
     this.weaponType = type;
   }
-
-  @ManyToOne
-  @JoinColumn(name = "character_id")
-  @com.fasterxml.jackson.annotation.JsonIgnore
-  private Character owner;
 
   public void reduceDurability(int amount) {
     this.durability = Math.max(0, this.durability - amount);

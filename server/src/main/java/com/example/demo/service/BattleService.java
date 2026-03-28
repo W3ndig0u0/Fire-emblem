@@ -34,6 +34,8 @@ public class BattleService {
 
         if (!defender.isAlive()) {
             defender.setDead(true);
+            defender.setPosX(-1);
+            defender.setPosY(-1);
             //characterRepository.delete(defender);
         }
 

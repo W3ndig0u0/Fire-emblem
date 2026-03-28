@@ -76,11 +76,6 @@ public class GameController {
         return ResponseEntity.ok(state);
     }
 
-    @PostMapping("/setup-test-battle")
-    public ResponseEntity<Long> setupTestBattle() {
-        return ResponseEntity.ok(initService.createNewGame());
-    }
-
     @PostMapping("/spawn")
     public ResponseEntity<Character> spawnUnit(
             @RequestParam String name,
@@ -116,6 +111,18 @@ public class GameController {
 
         return ResponseEntity.ok(report);
     }
+
+    @GetMapping("/sessions")
+    public ResponseEntity<List<GameSession>> getAllSessions() {
+        return ResponseEntity.ok(gameSessionRepository.findAll());
+    }
+
+    @DeleteMapping("/session/{id}")
+    public ResponseEntity<Void> deleteSession(@PathVariable Long id) {
+        gameSessionRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
     @PostMapping("/use-item")
     public ResponseEntity<String> useItem(@RequestParam Long unitId, @RequestParam Long itemId) {

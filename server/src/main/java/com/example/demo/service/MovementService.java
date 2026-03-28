@@ -42,6 +42,10 @@ public class MovementService {
         Character unit = characterRepository.findById(unitId)
                 .orElseThrow(() -> new RuntimeException("Unit not found"));
 
+        if(unit.isHasMoved()){
+            throw new RuntimeException(unit.getName() + " has already moved this turn!");
+        }
+
         if (unit.isHasActed()) {
             throw new RuntimeException(unit.getName() + " has already acted this turn!");
         }
@@ -61,6 +65,7 @@ public class MovementService {
 
         unit.setPosX(targetX);
         unit.setPosY(targetY);
+        unit.setHasActed(true);
 
         characterRepository.save(unit);
 

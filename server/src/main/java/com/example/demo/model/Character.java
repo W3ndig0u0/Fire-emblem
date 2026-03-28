@@ -46,6 +46,7 @@ public class Character {
   protected int posX;
   protected int posY;
   private boolean hasActed = false;
+  private boolean hasMoved = false;
   private int expValue = 20;
 
   @ManyToOne
@@ -54,6 +55,7 @@ public class Character {
   private GameSession gameSession;
 
   @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  @com.fasterxml.jackson.annotation.JsonManagedReference
   protected List<Item> inventory = new ArrayList<>();
 
   public Character(String name, int health, int mana, int attack, int defense, int speed, int movementRange) {

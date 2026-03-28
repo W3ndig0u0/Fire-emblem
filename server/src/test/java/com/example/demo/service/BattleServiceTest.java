@@ -32,7 +32,6 @@ class BattleServiceTest {
         hero.setAllegiance(Allegiance.PLAYER);
         hero.setUnitClass(UnitClass.MYRMIDON);
 
-        // Ensure Rarity is passed
         Weapon sword = new Weapon("Iron Sword", 1, Rarity.COMMON, 5, 40, WeaponType.SWORD);
         hero.addToInventory(sword);
         hero.setPosX(0);

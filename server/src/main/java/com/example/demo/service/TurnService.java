@@ -24,17 +24,28 @@ public class TurnService {
         session.setCurrentPhase("ENEMY_PHASE");
 
         List<Character> enemies = characterRepository.findByGameSessionIdAndAllegiance(sessionId, Character.Allegiance.ENEMY);
-        enemies.forEach(u -> u.setHasActed(false));
+        enemies.forEach(u -> {
+            u.setHasActed(false);
+            u.setHasMoved(false);
+        });
         characterRepository.saveAll(enemies);
 
         aiService.executeEnemyTurn(sessionId);
+
+        enemies.forEach(u -> {
+            u.setHasActed(false);
+            u.setHasMoved(false);
+        });
+        characterRepository.saveAll(enemies);
 
         session.setCurrentPhase("PLAYER_PHASE");
         session.setTurnNumber(session.getTurnNumber() + 1);
 
         List<Character> players = characterRepository.findByGameSessionIdAndAllegiance(sessionId, Character.Allegiance.PLAYER);
-        players.forEach(u -> u.setHasActed(false));
-
+        players.forEach(u -> {
+            u.setHasActed(false);
+            u.setHasMoved(false);
+        });
         sessionRepository.save(session);
         characterRepository.saveAll(players);
     }
