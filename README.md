@@ -1,4 +1,4 @@
-# Fire Emblem: Spring Boot Strategy Engine
+# Fire Emblem: Strategy Engine
 
 A sophisticated **Tactical RPG Engine** inspired by the classic **Fire Emblem** series, built with **Java** and **Spring Boot**. This project transitions traditional game mechanics into a robust backend architecture, managing complex combat simulations, unit statistics, and turn-based strategy logic.
 
